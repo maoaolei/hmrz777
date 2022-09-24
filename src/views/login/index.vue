@@ -53,8 +53,8 @@
 </template>
 
 <script>
+// 在项目中如何配置这几个环境   通过.env 配置 base api port
 import { validUsername } from '@/utils/validate'
-
 export default {
   name: 'Login',
   data() {
