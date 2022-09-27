@@ -4,7 +4,8 @@ export default {
   namespaced: true,
   state: {
     token: null,
-    userInfo: {}
+    userInfo: {},
+    hrsassTime: 0
   },
   mutations: {
     SET_TOKEN(state, token) {
@@ -15,6 +16,12 @@ export default {
     },
     REMOVE_USER_INFO(state) {
       state.userInfo = {}
+    },
+    REMOVE_TOKEN(state) {
+      state.token = null
+    },
+    SET_HRSASSTIME(state, hrsassTime) {
+      state.hrsassTime = hrsassTime
     }
   },
   actions: {
@@ -22,6 +29,7 @@ export default {
       const data = await login(loginData)
       console.log(data)
       commit('SET_TOKEN', data)
+      commit('SET_HRSASSTIME', +new Date())
     },
     async getUserInfo({ commit }) {
       const res = await getUserInfo()
@@ -29,6 +37,10 @@ export default {
       const result = { ...res, ...res1 }
       commit('SET_USER_INFO', result)
       return JSON.parse(JSON.stringify(result))
+    },
+    logout({ commit }) {
+      commit('REMOVE_USER_INFO')
+      commit('REMOVE_TOKEN')
     }
   }
 }
