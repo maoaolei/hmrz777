@@ -1,12 +1,18 @@
 <template>
-  <div class="departments-container">
+  <div v-loading="loading" class="departments-container">
     <el-card>
       <treenode :tree-node="company" :flag="false" @addDepts="changeshow" />
     </el-card>
     <el-tree :data="departs" default-expand-all :props="defaultprops">
-      <treenode slot-scope="{ data }" :tree-node="data" @addDepts="changeshow" />
+      <treenode
+        slot-scope="{ data }"
+        :tree-node="data"
+        @addDepts="changeshow"
+        @editDepts="editDepts"
+        @refreshList="getDepartments"
+      />
     </el-tree>
-    <adddept :show-dialog.sync="showDialog" :tree-node="currentNode" />
+    <adddept ref="editDepts" :show-dialog.sync="showDialog" :tree-node="currentNode" />
   </div>
 </template>
 
@@ -28,21 +34,33 @@ export default {
       },
       company: {},
       showDialog: false,
-      currentNode: {}
+      currentNode: {},
+      loading: false
 
     }
   },
   created() { this.getDepartments() },
   methods: {
     async getDepartments() {
-      const { depts, companyName, companyManage } = await getDepartments()
-      // console.log(depts)
-      this.departs = tranListToTreeData(depts, '')
-      this.company = { name: companyName, manager: companyManage, id: '' }
+      try {
+        this.loading = true
+        const { depts, companyName, companyManage } = await getDepartments()
+        // console.log(depts)
+        this.departs = tranListToTreeData(depts, '')
+        this.company = { name: companyName, manager: companyManage, id: '' }
+      } finally {
+        this.loading = false
+      }
     },
     changeshow(node) {
       this.showDialog = true
       this.currentNode = node
+    },
+    editDepts(node) {
+      // console.log(node)
+      this.showDialog = true
+      this.currentNode = { ...node }
+      this.$refs.editDepts.formData = { ...node }
     }
   }
 
