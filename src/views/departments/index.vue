@@ -56,10 +56,10 @@ export default {
     .el-card__body {
       padding-right: 4px;
     }
-    .el-tree {
-      .el-tree-node__content {
-        // padding-right: 20px;
-      }
-    }
+    // .el-tree {
+    //   .el-tree-node__content {
+    //     // padding-right: 20px;
+    //   }
+    // }
   }
   </style>
