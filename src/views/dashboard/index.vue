@@ -1,6 +1,7 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-text">name: {{ name }}</div>
+    <UploadExcel :on-success="handlesuccess" :before-upload="beforeUpload" />
   </div>
 </template>
 
@@ -13,12 +14,25 @@ export default {
     ...mapGetters([
       'name'
     ])
-  }
+  },
   // async created() {
   //   const res = await this.$store.dispatch('user/getUserInfo')
   //   console.log(res)
   //   // res.username = '123'
   // }
+  methods: {
+    handlesuccess(data) {
+      console.log(data)
+    },
+    beforeUpload(file) {
+      console.log(file)
+      if (file.size > 10240) {
+        this.$message.error('文件太大')
+        return false
+      }
+      return true
+    }
+  }
 }
 </script>
 
