@@ -1,5 +1,6 @@
 <template>
   <div class="user-info">
+    <i class="el-icon-printer" @click="$router.push('/employees/print/'+userId)" />
     <!-- 个人信息 -->
     <el-form label-width="220px">
       <!-- 工号 入职时间 -->
@@ -58,6 +59,7 @@
         <el-col :span="12">
           <el-form-item label="员工头像">
             <!-- 放置上传图片 -->
+            <UploadImg ref="imgs" :imgurl="employAvter" @onSuccess="onSuccess1" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -90,6 +92,7 @@
         <!-- 员工照片 -->
 
         <el-form-item label="员工照片">
+          <UploadImg ref="imgs1" :imgurl="employphoto" @onSuccess="onSuccess2" />
           <!-- 放置上传图片 -->
         </el-form-item>
         <el-form-item label="国家/地区">
@@ -457,7 +460,9 @@ export default {
         isThereAnyCompetitionRestriction: '', // 有无竞业限制
         proofOfDepartureOfFormerCompany: '', // 前公司离职证明
         remarks: '' // 备注
-      }
+      },
+      employAvter: '',
+      employphoto: ''
     }
   },
   created() {
@@ -467,14 +472,23 @@ export default {
   methods: {
     async getUserDetailById() {
       const res = await getUserDetailById(this.userId)
+      if (res.staffPhoto) {
+        this.employAvter = res.staffPhoto
+      }
       this.userInfo = res
     },
     async getPersonalDetail() {
       const res = await getPersonalDetail(this.userId)
+      if (res.staffPhoto) {
+        this.employphoto = res.staffPhoto
+      }
       this.formData = res
     },
     async saveupdate() {
       try {
+        if (this.$refs.imgs1.loading) {
+          return this.$message.error('头像还在上传')
+        }
         await saveUserDetailById1(this.formData)
         this.$message.success('更新成功')
       } catch (error) {
@@ -483,11 +497,20 @@ export default {
     },
     async saveUserInfo() {
       try {
+        if (this.$refs.imgs.loading) {
+          return this.$message.error('头像还在上传')
+        }
         await saveUserDetailById(this.userInfo)
         this.$message.success('保存用户信息成功')
       } catch (error) {
         this.$message.error('保存用户基本信息失败')
       }
+    },
+    onSuccess1(data) {
+      this.userInfo.staffPhoto = data.imgUrl
+    },
+    onSuccess2(data) {
+      this.formData.staffPhoto = data.imgUrl
     }
   }
 }

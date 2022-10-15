@@ -1,7 +1,10 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-text">name: {{ name }}</div>
-    <UploadExcel :on-success="handlesuccess" :before-upload="beforeUpload" />
+    <!-- <UploadExcel :on-success="handlesuccess" :before-upload="beforeUpload" /> -->
+    <UploadImg @onSuccess="onSuccess1" />
+    <UploadImg @onSuccess="onSuccess2" />
+
   </div>
 </template>
 
@@ -10,6 +13,11 @@ import { mapGetters } from 'vuex'
 
 export default {
   name: 'Dashboard',
+  data() {
+    return {
+      select: ''
+    }
+  },
   computed: {
     ...mapGetters([
       'name'
@@ -31,8 +39,15 @@ export default {
         return false
       }
       return true
+    },
+    onSuccess1(img) {
+      console.log(123, img)
+    },
+    onSuccess2(img) {
+      console.log(789, img)
     }
   }
+
 }
 </script>
 

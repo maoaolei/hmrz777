@@ -14,6 +14,21 @@
     <el-card>
       <el-table v-loading="loading" border :data="list">
         <el-table-column label="序号" sortable="" width="80" type="index" />
+        <el-table-column label="头像">
+          <template slot-scope="{row}">
+            <img
+              :src="row.staffPhoto"
+              alt=""
+              style="
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            padding: 10px;
+            "
+              @click="generator(row.staffPhoto)"
+            >
+          </template>
+        </el-table-column>
         <el-table-column label="姓名" prop="username" />
         <el-table-column label="工号" prop="workNumber" />
         <el-table-column label="聘用形式" prop="formOfEmployment" :formatter="formatterFn" />
@@ -54,6 +69,15 @@
       </el-row>
     </el-card>
     <addemployee :dialog-visible.sync="dialogVisible" />
+
+    <el-dialog
+      title="提示"
+      :visible.sync="dialogVisible1"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <canvas ref="canvas" />
+    </el-dialog>
   </div>
 </template>
 
@@ -61,6 +85,7 @@
 import { getEmployeeList, delEmployee } from '@/api/employees'
 import EmployeeEnum from '@/api/constant/employees'
 import addemployee from './components/add-employee.vue'
+import QRCode from 'qrcode'
 // console.log(EmployeeEnum)
 export default {
   components: {
@@ -76,7 +101,8 @@ export default {
       total: 0,
       loading: false,
       hireType: EmployeeEnum.hireType,
-      dialogVisible: false
+      dialogVisible: false,
+      dialogVisible1: false
     }
   },
   created() {
@@ -156,6 +182,19 @@ export default {
     goDeatil(row) {
       console.log(row)
       this.$router.push('/employees/detail/' + row.id)
+    },
+    generator(staffPhoto) {
+      if (!staffPhoto) return this.$message.error('暂无头像')
+      this.dialogVisible1 = true
+      this.$nextTick(() => {
+        QRCode.toCanvas(this.$refs.canvas, staffPhoto, function(error) {
+          if (error) console.error(error)
+          console.log('success!')
+        })
+      })
+    },
+    handleClose() {
+      this.dialogVisible1 = false
     }
   }
 }
