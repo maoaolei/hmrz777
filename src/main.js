@@ -11,6 +11,8 @@ import '@/styles/index.scss' // global css
 import App from './App'
 import store from './store'
 import router from './router'
+import Print from 'vue-print-nb'
+Vue.use(Print)
 import components from '@/components'
 Vue.use(components)
 
