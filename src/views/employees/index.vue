@@ -6,7 +6,7 @@
       </template>
       <template #after>
         <el-button size="small" type="warning" @click="$router.push('/import')">导入</el-button>
-        <el-button size="small" type="danger" @click="exportExcel">导出</el-button>
+        <el-button size="small" :disabled="isHasp('employees-export')" type="danger" @click="exportExcel">导出</el-button>
         <el-button size="small" type="primary" @click="handelEmploy">新增员工</el-button>
       </template>
     </PageTools>
@@ -17,14 +17,14 @@
         <el-table-column label="头像">
           <template slot-scope="{row}">
             <img
-              :src="row.staffPhoto"
-              alt=""
               style="
             border-radius: 50%;
             width: 100px;
             height: 100px;
             padding: 10px;
             "
+              :src="row.staffPhoto"
+              alt=""
               @click="generator(row.staffPhoto)"
             >
           </template>
@@ -50,7 +50,7 @@
             <el-button type="text" size="small">转正</el-button>
             <el-button type="text" size="small">调岗</el-button>
             <el-button type="text" size="small">离职</el-button>
-            <el-button type="text" size="small">角色</el-button>
+            <el-button type="text" size="small" @click="role(row)">角色</el-button>
             <el-button type="text" size="small" @click="del(row.id)">删除</el-button>
           </template>
         </el-table-column>
@@ -78,6 +78,8 @@
     >
       <canvas ref="canvas" />
     </el-dialog>
+    <!-- 分配角色 -->
+    <AssignRole ref="AssignRole" :dialog-visible2.sync="isShow" />
   </div>
 </template>
 
@@ -86,11 +88,16 @@ import { getEmployeeList, delEmployee } from '@/api/employees'
 import EmployeeEnum from '@/api/constant/employees'
 import addemployee from './components/add-employee.vue'
 import QRCode from 'qrcode'
+import AssignRole from './components/assign-role.vue'
+import isHasp from '@/mixins/btnPermisssion'
+
 // console.log(EmployeeEnum)
 export default {
   components: {
-    addemployee
+    addemployee,
+    AssignRole
   },
+  mixins: [isHasp],
   data() {
     return {
       page: {
@@ -102,7 +109,9 @@ export default {
       loading: false,
       hireType: EmployeeEnum.hireType,
       dialogVisible: false,
-      dialogVisible1: false
+      dialogVisible1: false,
+      isShow: false,
+      checkList: ''
     }
   },
   created() {
@@ -195,6 +204,10 @@ export default {
     },
     handleClose() {
       this.dialogVisible1 = false
+    },
+    role(row) {
+      this.isShow = true
+      this.$refs.AssignRole.userId = row.id
     }
   }
 }

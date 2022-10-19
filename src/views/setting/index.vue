@@ -5,6 +5,7 @@
         <el-tab-pane label="角色管理" name="first">
           <el-row :gutter="10">
             <el-button
+              v-isHas="'role-add'"
               type="primary"
               style="margin-left:10px"
               size="small"
@@ -33,9 +34,9 @@
             />
             <el-table-column label="操作" width="240">
               <template slot-scope="{row}">
-                <el-button size="small" type="success">分配权限</el-button>
-                <el-button size="small" type="primary" @click="editRole(row)">编辑</el-button>
-                <el-button size="small" type="danger" @click="delRole(row.id)">删除</el-button>
+                <el-button v-isHas="'role-assgin'" size="small" type="success" @click="showSetpermission(row.id)">分配权限</el-button>
+                <el-button v-isHas="'role-edit'" size="small" type="primary" @click="editRole(row)">编辑</el-button>
+                <el-button v-isHas="'role-delete'" size="small" type="danger" @click="delRole(row.id)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -79,6 +80,7 @@
       </el-tabs>
     </el-card>
     <add-role ref="addRole" :dialog-visible.sync="dialogVisible" @refresh="getRoleList" />
+    <set-permission :dialog-visible.sync="isShow" :role-id="roleId" />
   </div>
 </template>
 
@@ -86,9 +88,12 @@
 import { getRoleList, deleteRole, getCompanyInfo } from '@/api/setting'
 import addRole from './components/addRole.vue'
 import { mapGetters } from 'vuex'
+import SetPermission from './components/setPermission.vue'
+// import isHasp from '@/mixins/btnPermisssion'
 export default {
   components: {
-    addRole
+    addRole,
+    SetPermission
   },
   data() {
     return {
@@ -102,7 +107,9 @@ export default {
       roleList: [],
       loading: false,
       dialogVisible: false,
-      companyInfo: {}
+      isShow: false,
+      companyInfo: {},
+      roleId: ''
       // 记录总数
     }
   },
@@ -155,6 +162,11 @@ export default {
     },
     async getCompanyInfo() {
       this.companyInfo = await getCompanyInfo(this.companyId)
+    },
+    showSetpermission(id) {
+      // console.log(798)
+      this.roleId = id
+      this.isShow = true
     }
 
   }
